@@ -1,0 +1,28 @@
+{
+  "name": "comparte-tu-ruta-backend",
+  "version": "1.0.0",
+  "description": "API REST del sistema de carpooling comunitario Comparte Tu Ruta, orientado a barrios periféricos de Cali, Valle del Cauca.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node tests/smoke-test.js",
+    "db:init": "node database/init-db.js"
+  },
+  "keywords": ["carpooling", "sena", "comparte-tu-ruta", "express", "mysql"],
+  "author": "Andrés - SENA",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5",
+    "express-validator": "^7.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
