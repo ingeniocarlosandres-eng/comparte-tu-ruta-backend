@@ -18,6 +18,17 @@ class RutaService {
       throw new Error(`El vehículo solo tiene capacidad para ${vehiculo.capacidadMaxima} puestos`);
     }
 
+    // Regla de negocio: no se puede publicar una ruta cuya fecha/hora de salida
+    // ya haya pasado. Esta validación vive aquí (y no en el modelo Ruta) porque
+    // solo aplica al momento de crear la ruta, no al leerla de nuevo más adelante.
+    const fechaHoraSalida = new Date(`${datosRuta.fechaSalida}T${datosRuta.horaSalida}`);
+    if (Number.isNaN(fechaHoraSalida.getTime())) {
+      throw new Error('La fecha u hora de salida no tienen un formato válido');
+    }
+    if (fechaHoraSalida.getTime() <= Date.now()) {
+      throw new Error('No se puede publicar una ruta con fecha u hora de salida ya pasada');
+    }
+
     const ruta = new Ruta({
       conductorId,
       vehiculoId: datosRuta.vehiculoId,
