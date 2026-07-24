@@ -6,6 +6,12 @@ const rutaRepository = require('../repositories/RutaRepository');
  * ReservaService
  * Gestiona la solicitud y confirmación de puestos en una ruta,
  * garantizando que nunca se reserven más puestos de los disponibles.
+ *
+ * Nota sobre HU-04 (ver REGLAS_NEGOCIO.md, sección 5): la historia de
+ * usuario describe un descuento "provisional" del cupo al momento de
+ * reservar. Esta implementación, por decisión de diseño documentada,
+ * descuenta el cupo únicamente al CONFIRMAR la reserva (ver
+ * confirmarReserva más abajo), no al solicitarla.
  */
 class ReservaService {
   async solicitarReserva(pasajeroId, { rutaId, puestosReservados }) {
