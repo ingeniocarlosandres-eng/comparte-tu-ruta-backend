@@ -11,6 +11,8 @@ En barrios como Poblado Campestre, Juanchito, Floralia, Terrón Colorado, Ciudad
 **Reglas de negocio principales:**
 - Cada vehículo es privado, por lo tanto cada ruta admite **máximo 4 puestos disponibles**.
 - El precio por puesto debe estar entre **$3.000 y $100.000 COP**.
+- No se puede **publicar una ruta con fecha u hora de salida ya pasada**.
+- Un mismo pasajero **no puede tener dos reservas activas** (pendiente o confirmada) sobre la misma ruta.
 - Se usan nombres reales de barrios de Cali para la búsqueda de rutas.
 
 ## Tecnologías utilizadas

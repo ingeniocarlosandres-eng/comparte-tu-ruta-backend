@@ -50,6 +50,16 @@ async function ejecutarPruebas() {
   });
   afirmar(rutaInvalida.status === 400, 'Rechaza precio fuera del rango $3.000-$100.000');
 
+  const rutaFechaPasada = await solicitar('/rutas', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${tokenConductor}` },
+    body: JSON.stringify({
+      vehiculoId: vehiculo.cuerpo.vehiculo.id, barrioOrigen: 'Floralia', barrioDestino: 'Ciudad Córdoba',
+      fechaSalida: '2020-01-01', horaSalida: '07:00:00', precioPorPuesto: 4000, puestosDisponibles: 2
+    })
+  });
+  afirmar(rutaFechaPasada.status === 400, 'Rechaza la publicación de una ruta con fecha ya pasada');
+
   const ruta = await solicitar('/rutas', {
     method: 'POST',
     headers: { Authorization: `Bearer ${tokenConductor}` },
@@ -78,6 +88,13 @@ async function ejecutarPruebas() {
     body: JSON.stringify({ rutaId: ruta.cuerpo.ruta.id, puestosReservados: 2 })
   });
   afirmar(reserva.status === 201, 'Solicitud de reserva responde 201');
+
+  const reservaDuplicada = await solicitar('/reservas', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${tokenPasajero}` },
+    body: JSON.stringify({ rutaId: ruta.cuerpo.ruta.id, puestosReservados: 1 })
+  });
+  afirmar(reservaDuplicada.status === 400, 'Rechaza una segunda reserva del mismo pasajero sobre la misma ruta');
 
   const confirmacion = await solicitar(`/reservas/${reserva.cuerpo.reserva.id}/confirmar`, {
     method: 'PATCH',
