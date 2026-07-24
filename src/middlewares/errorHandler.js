@@ -8,13 +8,15 @@ function manejadorDeErrores(err, req, res, next) {
 
   const mensajesDeValidacion = [
     'no tiene un formato válido', 'debe tener', 'obligatorio', 'obligatorios',
-    'inválido', 'no pueden ser iguales', 'debe estar entre', 'ya existe'
+    'inválido', 'no pueden ser iguales', 'debe estar entre', 'ya existe',
+    'ya pasada', 'reserva activa'
   ];
-  const esErrorDeValidacion = mensajesDeValidacion.some((frag) => err.message?.includes(frag));
+  const mensajeEnMinuscula = (err.message || '').toLowerCase();
+  const esErrorDeValidacion = mensajesDeValidacion.some((frag) => mensajeEnMinuscula.includes(frag));
 
   const codigo = esErrorDeValidacion ? 400
-    : err.message?.includes('no encontrad') ? 404
-    : err.message?.includes('permisos') || err.message?.includes('Credenciales') ? 401
+    : mensajeEnMinuscula.includes('no encontrad') ? 404
+    : mensajeEnMinuscula.includes('permisos') || mensajeEnMinuscula.includes('credenciales') ? 401
     : 500;
 
   res.status(codigo).json({
