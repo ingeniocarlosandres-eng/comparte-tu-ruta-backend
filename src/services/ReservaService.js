@@ -16,6 +16,13 @@ class ReservaService {
       throw new Error('El conductor no puede reservar un puesto en su propia ruta');
     }
 
+    // Regla de negocio: un mismo pasajero no puede tener dos reservas activas
+    // (pendiente o confirmada) sobre la misma ruta.
+    const reservaExistente = await reservaRepository.buscarActivaPorRutaYPasajero(rutaId, pasajeroId);
+    if (reservaExistente) {
+      throw new Error('Ya existe una reserva activa de este pasajero para esta ruta');
+    }
+
     const reserva = new Reserva({
       rutaId,
       pasajeroId,

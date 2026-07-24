@@ -42,6 +42,20 @@ class ReservaRepository {
     return filas.map(ReservaRepository._mapRow);
   }
 
+  /**
+   * Busca una reserva activa (pendiente o confirmada) del mismo pasajero
+   * sobre la misma ruta. Se usa para evitar reservas duplicadas.
+   */
+  async buscarActivaPorRutaYPasajero(rutaId, pasajeroId) {
+    const [filas] = await pool.query(
+      `SELECT * FROM reservas
+       WHERE ruta_id = ? AND pasajero_id = ? AND estado IN ('pendiente', 'confirmada')
+       LIMIT 1`,
+      [rutaId, pasajeroId]
+    );
+    return ReservaRepository._mapRow(filas[0]);
+  }
+
   async actualizarEstado(id, estado) {
     await pool.query('UPDATE reservas SET estado = ? WHERE id = ?', [estado, id]);
     return this.buscarPorId(id);
