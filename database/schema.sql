@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS vehiculos (
 -- Tabla: rutas
 -- Publicación de rutas por parte de los conductores
 -- Regla de negocio: máximo 4 puestos por ser vehículo privado
--- Regla de negocio: precio entre $3.000 y $100.000 COP
+-- Regla de negocio: precio mínimo $3.000 COP, sin tope máximo
+--   (aporte voluntario propio de un carpooling comunitario)
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS rutas (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS rutas (
   CONSTRAINT fk_ruta_vehiculo FOREIGN KEY (vehiculo_id)
     REFERENCES vehiculos(id) ON DELETE CASCADE,
   CONSTRAINT chk_puestos_disponibles CHECK (puestos_disponibles BETWEEN 0 AND 4),
-  CONSTRAINT chk_precio_rango CHECK (precio_por_puesto BETWEEN 3000 AND 100000)
+  CONSTRAINT chk_precio_rango CHECK (precio_por_puesto >= 3000)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
