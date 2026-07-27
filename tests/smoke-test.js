@@ -45,10 +45,20 @@ async function ejecutarPruebas() {
     headers: { Authorization: `Bearer ${tokenConductor}` },
     body: JSON.stringify({
       vehiculoId: vehiculo.cuerpo.vehiculo.id, barrioOrigen: 'Floralia', barrioDestino: 'Ciudad Córdoba',
-      fechaSalida: '2026-08-01', horaSalida: '07:00:00', precioPorPuesto: 999999, puestosDisponibles: 2
+      fechaSalida: '2026-08-01', horaSalida: '07:00:00', precioPorPuesto: 2000, puestosDisponibles: 2
     })
   });
-  afirmar(rutaInvalida.status === 400, 'Rechaza precio fuera del rango $3.000-$100.000');
+  afirmar(rutaInvalida.status === 400, 'Rechaza precio por debajo del mínimo de $3.000 COP');
+
+  const rutaPrecioAlto = await solicitar('/rutas', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${tokenConductor}` },
+    body: JSON.stringify({
+      vehiculoId: vehiculo.cuerpo.vehiculo.id, barrioOrigen: 'Floralia', barrioDestino: 'Ciudad Córdoba',
+      fechaSalida: '2026-08-01', horaSalida: '07:00:00', precioPorPuesto: 500000, puestosDisponibles: 2
+    })
+  });
+  afirmar(rutaPrecioAlto.status === 201, 'Acepta un aporte alto sin tope máximo (regla de negocio corregida)');
 
   const rutaFechaPasada = await solicitar('/rutas', {
     method: 'POST',

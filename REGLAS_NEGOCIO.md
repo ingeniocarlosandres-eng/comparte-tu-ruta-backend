@@ -2,17 +2,17 @@
 
 Este documento organiza las reglas de negocio implementadas en el backend y las
 relaciona con las Historias de Usuario (HU) del documento de planeación del
-proyecto (`Documento_Proyecto_ADSO_v1_0.pdf`). El objetivo es que cualquier
-regla que exista en el código tenga un origen claro: o proviene directamente
-de una HU, o es una extensión justificada que la complementa.
+proyecto (`Documento_Proyecto_ADSO_v1_6.docx`, corregido). El objetivo es que
+cualquier regla que exista en el código tenga un origen claro y trazable a una
+historia de usuario formal.
 
-> **Nota:** el documento de planeación oficial (PDF) tiene inconsistencias ya
-> identificadas (mezcla de app móvil/web, stack de backend contradictorio,
-> alcance de pagos/calificaciones/geolocalización en tiempo real que aparece
-> y desaparece según la sección) que se corregirán después de la primera
-> revisión del instructor. Este archivo **no reemplaza ni modifica el PDF**;
-> es un documento técnico complementario del backend para dejar trazabilidad
-> mientras esa revisión ocurre.
+> **Historial de este documento:** la primera versión (basada en
+> `Documento_Proyecto_ADSO_v1_0.pdf`) identificó varias reglas implementadas en
+> el código que no tenían respaldo explícito en ninguna HU, y una inconsistencia
+> real entre la Tabla 3 (RF) y la Tabla 5 (CU) del documento original. Esas
+> observaciones motivaron una corrección formal del documento de planeación
+> (versión 1.6), que ya resolvió la mayoría de esos pendientes. Este archivo
+> se actualizó para reflejar esa corrección.
 
 ---
 
@@ -22,9 +22,12 @@ de una HU, o es una extensión justificada que la complementa.
 |---|---|---|---|
 | HU-01 (A/B) | Registro de nuevos miembros | `AuthService.registrar` | ✅ Cubierta completa |
 | HU-02 | Autenticación segura | `AuthService.iniciarSesion` | ✅ Cubierta completa |
-| HU-03 | Creación y oferta de trayectos | `RutaService.publicarRuta` | ✅ Cubierta + 2 reglas adicionales |
-| HU-04 | Búsqueda de viajes y reserva de asientos | `RutaService.buscarRutas` + `ReservaService` | ⚠️ Cubierta con una decisión de diseño distinta a la HU (ver sección 4) |
-| HU-05, HU-06, HU-07 | Reservar Cupo / Gestionar Alertas / Calificar Servicio | — | ❌ Referenciadas en la tabla de trazabilidad RF↔HU del PDF, pero nunca redactadas en la sección 1.16. Pendiente de revisión con el instructor. |
+| HU-03 | Creación y oferta de trayectos | `RutaService.publicarRuta` | ✅ Cubierta completa |
+| HU-04 | Búsqueda de rutas disponibles | `RutaService.buscarRutas` | ✅ Cubierta completa |
+| HU-05 | Solicitud y reserva de cupo | `ReservaService.solicitarReserva` | ✅ Cubierta, con una decisión de diseño documentada (ver sección 5) |
+| HU-06 | Gestión de solicitudes de reserva por el conductor | `ReservaService.confirmarReserva` / `rechazarReserva` | ✅ Cubierta completa |
+| HU-07 | Notificaciones automáticas | — | Fuera de alcance de la versión actual (documento v1.6) |
+| HU-08 | Calificación mutua | — | Fuera de alcance del proyecto (documento v1.6, sección 1.7) |
 
 ---
 
@@ -39,10 +42,10 @@ comunitaria de carpooling.
 | Escenario 1: registro exitoso con Nombre, Email válido, Celular, Rol, Contraseña segura | `Usuario.validar()` (formato de nombre, email, teléfono) + `AuthService.registrar()` (hash de contraseña con bcrypt) | ✅ |
 | Escenario 2: correo ya registrado → mensaje de error específico | `AuthService.registrar()`: `"Ya existe un usuario registrado con este correo electrónico"` | ✅ |
 
-**Extensión no explícita en la HU:** la contraseña debe tener mínimo 6
-caracteres (`AuthService.registrar()`). La HU solo pide "contraseña segura"
-sin definir la regla exacta — se tomó una decisión de implementación
-razonable, pendiente de que el documento de planeación la formalice.
+**Nota de implementación:** la contraseña debe tener mínimo 6 caracteres
+(`AuthService.registrar()`). La HU pide "contraseña segura" sin fijar un
+número exacto de caracteres; se tomó 6 como un mínimo razonable para el
+alcance de este proyecto formativo.
 
 ---
 
@@ -54,7 +57,7 @@ razonable, pendiente de que el documento de planeación la formalice.
 | Criterio de aceptación de la HU | Dónde se implementa | Estado |
 |---|---|---|
 | Escenario 1: login exitoso con credenciales válidas | `AuthService.iniciarSesion()` | ✅ |
-| Escenario 2: error genérico sin indicar qué campo falló, por seguridad | `AuthService.iniciarSesion()`: siempre responde `"Credenciales inválidas"`, tanto si el correo no existe como si la contraseña es incorrecta | ✅ (coincide exactamente con la intención de seguridad de la HU) |
+| Escenario 2: error genérico sin indicar qué campo falló, por seguridad | `AuthService.iniciarSesion()`: siempre responde `"Credenciales inválidas"`, tanto si el correo no existe como si la contraseña es incorrecta | ✅ |
 
 Sin extensiones adicionales — esta HU quedó cubierta tal cual fue redactada.
 
@@ -68,101 +71,141 @@ vean y soliciten viajar conmigo.
 
 | Criterio de aceptación de la HU | Dónde se implementa | Estado |
 |---|---|---|
-| Escenario 1: publicar ruta con origen/destino, cupos (ej. 4) y hora → visible en tiempo real | `RutaService.publicarRuta()` + `RutaRepository.buscar()` | ✅ |
+| Escenario 1: publicar ruta con origen/destino, cupos (máx. 4) y aporte sugerido (mín. $3.000 COP, sin tope) → visible en tiempo real | `RutaService.publicarRuta()` + `RutaRepository.buscar()` | ✅ |
+| Escenario 2 (nuevo en v1.6): rechazar aporte por debajo de $3.000 COP o fecha/hora ya pasada | `Ruta.validar()` (precio) + `RutaService.publicarRuta()` (fecha) | ✅ |
 
-### Reglas adicionales implementadas, no explícitas en la HU
+### Reglas de negocio formalizadas en el documento v1.6
 
-Estas reglas nacen del **diccionario de datos** (Tabla 14, clase `Ruta`, y
-Tabla 12, clase `Conductor`) y de buen juicio sobre el dominio del problema,
-pero **no están redactadas como criterios de aceptación** en la HU-03. Se
-recomienda incorporarlas formalmente al documento de planeación:
-
-1. **Máximo 4 puestos por ruta.** El diccionario de datos define
-   `capacidadVehiculo: int, >0` (sin techo) y `cuposDisponibles: int, ≥0`
-   (sin techo tampoco). El código endurece esta regla a un máximo de 4,
-   coherente con que los vehículos son particulares. *(`Ruta.PUESTOS_MAXIMOS`,
-   `Vehiculo.CAPACIDAD_MAXIMA_PERMITIDA`)*
-2. **Precio entre $3.000 y $100.000 COP.** El diccionario de datos define
-   `precioPorPasajero: double, ≥0` — sin rango superior ni inferior más allá
-   de cero. El código añade el rango completo. *(`Ruta.PRECIO_MINIMO`,
-   `Ruta.PRECIO_MAXIMO`)*
+1. **Máximo 4 puestos por ruta.** Formalizado en la Tabla 16 (diccionario de
+   datos de `Ruta`, campo `cuposDisponibles`: "Entre 0 y 4"), coherente con
+   que los vehículos son particulares.
+   *(`Ruta.PUESTOS_MAXIMOS`, `Vehiculo.CAPACIDAD_MAXIMA_PERMITIDA`)*
+2. **Precio mínimo $3.000 COP, sin tope máximo.** Formalizado en la Tabla 16
+   (campo `precioPorPasajero`: "Mínimo $3.000 COP, sin tope máximo"). Este es
+   el ajuste más reciente: la versión anterior del código y del documento
+   fijaban un tope superior de $100.000 COP, que no reflejaba la realidad de
+   un carpooling comunitario, donde el aporte es voluntario y puede variar
+   según distancia, combustible o contexto del trayecto sin un límite fijo.
+   *(`Ruta.PRECIO_MINIMO`; ya no existe `Ruta.PRECIO_MAXIMO`)*
 3. **No se puede publicar una ruta con fecha/hora de salida ya pasada.**
-   No existe ningún criterio de aceptación en la HU-03 sobre esto — es una
-   regla de sentido común para evitar datos inconsistentes.
+   Añadido como Escenario 2 de HU-03 en la corrección v1.6.
    *(`RutaService.publicarRuta()`)*
 
 ---
 
-## 5. HU-04 — Búsqueda de viajes y reserva de asientos
+## 5. HU-04 — Búsqueda de rutas disponibles
 
-**Como** pasajero que necesita transportarse, **quiero** buscar rutas y
-enviar una solicitud de reserva, **para** asegurar transporte colaborativo.
+**Como** pasajero que necesita transportarse, **quiero** buscar rutas activas
+filtrando por barrio de origen, destino y fecha, **para** encontrar opciones
+de transporte antes de decidir cuál reservar.
 
 | Criterio de aceptación de la HU | Dónde se implementa | Estado |
 |---|---|---|
-| Escenario 1: buscar y reservar un cupo → notificación al conductor | `RutaService.buscarRutas()` + `ReservaService.solicitarReserva()` | ⚠️ Ver decisión de diseño abajo |
+| Escenario 1: buscar por barrio y/o fecha → lista de rutas activas con cupo | `RutaService.buscarRutas()` + `RutaRepository.buscar()` | ✅ |
+
+Esta historia se separó de la reserva de cupo (antes mezcladas en una sola
+HU-04) en la corrección v1.6, para que cada capacidad del sistema tenga su
+propia historia y su propio caso de uso (CU-04 búsqueda, CU-05 reserva).
+
+---
+
+## 6. HU-05 — Solicitud y reserva de cupo
+
+**Como** pasajero que ya encontró una ruta, **quiero** enviar una solicitud de
+reserva indicando cuántos puestos necesito, **para** asegurar mi transporte
+una vez el conductor la confirme.
+
+| Criterio de aceptación de la HU | Dónde se implementa | Estado |
+|---|---|---|
+| Escenario 1: solicitar reserva → queda "pendiente", cupo visible hasta confirmación | `ReservaService.solicitarReserva()` | ✅ (ver decisión de diseño abajo) |
+| Escenario 2 (nuevo en v1.6): rechazar segunda solicitud del mismo pasajero sobre la misma ruta | `ReservaService.solicitarReserva()` + `ReservaRepository.buscarActivaPorRutaYPasajero()` | ✅ |
 
 ### Decisión de diseño documentada: momento del descuento de cupo
 
-La HU-04 especifica textualmente:
+La redacción original de esta historia (antes parte de la HU-04) describía
+que el cupo se descuenta **"provisionalmente"** al momento de reservar. El
+backend implementa un comportamiento distinto: el cupo solo se descuenta
+cuando el conductor **confirma** la reserva (`ReservaService.confirmarReserva()`
+→ `Ruta.reservarPuestos()`). Mientras la reserva está en estado `pendiente`,
+el cupo sigue apareciendo como disponible para otros pasajeros.
 
-> *"...el sistema descuenta **provisionalmente** un cupo de la oferta del
-> conductor y envía una notificación automática de solicitud al mismo."*
-
-Es decir, la HU espera que el cupo se reste **al momento de reservar**
-(de forma provisional, reversible si el conductor rechaza).
-
-**El backend implementa un comportamiento distinto:** el cupo solo se
-descuenta cuando el conductor **confirma** la reserva
-(`ReservaService.confirmarReserva()` → `Ruta.reservarPuestos()`). Mientras la
-reserva está en estado `pendiente`, el cupo sigue apareciendo como
-disponible para otros pasajeros.
-
-**Justificación de la decisión (registrada, no oculta):**
+**Justificación de la decisión (registrada, no oculta; ya reflejada también en
+el documento v1.6 como una nota bajo la Tabla 10):**
 - Evita dejar cupos "atrapados" indefinidamente si un conductor nunca
   responde a una solicitud pendiente.
-- Simplifica el modelo de datos: no se necesita una lógica de "liberar cupo"
-  al rechazar una reserva, porque nunca se restó en primer lugar.
-- A cambio, introduce un riesgo distinto: dos pasajeros podrían solicitar el
-  mismo cupo mientras ambas solicitudes están pendientes, y el conductor
-  tendría que rechazar manualmente a uno de los dos al confirmar al primero.
+- Simplifica el modelo de datos: no se necesita lógica de "liberar cupo" al
+  rechazar una reserva, porque nunca se restó en primer lugar.
+- A cambio, dos pasajeros podrían solicitar el mismo cupo mientras ambas
+  solicitudes están pendientes; el conductor solo puede confirmar una.
 
-Esta diferencia queda documentada aquí para que, en la revisión con el
-instructor, se decida si el código se ajusta a la HU tal como está escrita,
-o si la HU se actualiza para reflejar esta decisión de diseño.
-
-### Regla adicional implementada, no explícita en la HU
-
-**Un mismo pasajero no puede tener dos reservas activas (pendiente o
-confirmada) sobre la misma ruta.** La HU-04 no contempla este caso — se
-implementó como una regla de sentido común para evitar reservas duplicadas
-por error o abuso. *(`ReservaService.solicitarReserva()`,
-`ReservaRepository.buscarActivaPorRutaYPasajero()`)*
+Esta es una decisión de diseño consciente y documentada en ambos lugares
+(código y planeación), no una inconsistencia pendiente de resolver.
 
 ---
 
-## 6. Reglas de negocio sin Historia de Usuario asociada
+## 7. HU-06 — Gestión de solicitudes de reserva por el conductor
 
-Estas reglas existen en el código pero no corresponden a ninguna HU
-redactada (ni siquiera a las HU-05/06/07 mencionadas solo en la tabla de
-trazabilidad). Se dejan aquí para que, si se redactan esas historias más
-adelante, ya exista una base real de qué reglas cubrir:
+**Como** conductor que publicó una ruta, **quiero** ver las solicitudes
+pendientes y decidir si las confirmo o las rechazo, **para** controlar quién
+viaja en mi vehículo.
 
-| Regla | Dónde vive | Posible HU futura |
+| Criterio de aceptación de la HU | Dónde se implementa | Estado |
 |---|---|---|
-| Un conductor no puede reservar un puesto en su propia ruta | `ReservaService.solicitarReserva()` | Podría anexarse como Escenario 2 de HU-04 |
-| El conductor solo puede confirmar/rechazar/editar/cancelar rutas y reservas propias | `RutaService`, `ReservaService` (validación de `conductorId`) | Correspondería a HU-05 (Reservar Cupo) o una nueva HU de gestión |
-| Un vehículo no puede tener más puestos disponibles que su capacidad máxima registrada | `RutaService.publicarRuta()` | Extensión natural de HU-03 |
+| Escenario 1: confirmar solicitud → descuenta cupo, marca "confirmada" | `ReservaService.confirmarReserva()` → `Ruta.reservarPuestos()` | ✅ |
+| Escenario 2: rechazar solicitud → marca "rechazada", no afecta cupos | `ReservaService.rechazarReserva()` | ✅ |
+
+Esta historia se agregó en la corrección v1.6: existía la funcionalidad en el
+backend desde antes, pero no tenía una HU formal asociada (RF-06 apuntaba
+incorrectamente a esta función cuando en realidad correspondía a
+notificaciones). Ahora tiene su propio RF-08, CU-08 y HU-06.
 
 ---
 
-## 7. Resumen para la revisión con el instructor
+## 8. HU-07 y HU-08 — Fuera de alcance
 
-1. Formalizar en el diccionario de datos (Tabla 14) el rango de precio
-   ($3.000–$100.000) y el máximo de 4 cupos, hoy solo implícitos en el código.
-2. Decidir si se redactan las HU-05, HU-06 y HU-07 (referenciadas en la
-   tabla RF↔HU pero ausentes de la sección 1.16), o si se retiran de esa
-   tabla mientras no exista alcance para pagos/calificaciones/alertas.
-3. Resolver la diferencia entre la HU-04 (descuento provisional al reservar)
-   y el comportamiento actual del backend (descuento al confirmar) — decidir
-   si se ajusta el código o se actualiza la redacción de la HU.
+- **HU-07 (Notificaciones automáticas):** el backend no implementa un sistema
+  de notificaciones push. Documentada en v1.6 como trabajo futuro.
+- **HU-08 (Calificación mutua):** excluida explícitamente del alcance del
+  proyecto desde la sección 1.7 del documento de planeación. La versión
+  anterior tenía una referencia contradictoria ("HU-05 Futura") que ya se
+  corrigió en v1.6.
+
+Ninguna de las dos tiene código asociado en el backend, ni se espera que lo
+tenga en esta versión del proyecto.
+
+---
+
+## 9. Reglas de negocio sin Historia de Usuario asociada
+
+Estas reglas existen en el código como parte natural de la implementación,
+sin ser un criterio de aceptación explícito de ninguna HU:
+
+| Regla | Dónde vive | Justificación |
+|---|---|---|
+| Un conductor no puede reservar un puesto en su propia ruta | `ReservaService.solicitarReserva()` | Regla de sentido común no contemplada en HU-05 |
+| El conductor solo puede confirmar/rechazar/editar/cancelar rutas y reservas propias | `RutaService`, `ReservaService` (validación de `conductorId`) | Control de acceso implícito en HU-03 y HU-06 |
+| Un vehículo no puede ofrecer más puestos que su capacidad máxima registrada | `RutaService.publicarRuta()` | Extensión natural de HU-03 |
+
+---
+
+## 10. Pendientes que quedan fuera de esta corrección
+
+La corrección v1.6 del documento se limitó, a propósito, a Historias de
+Usuario, Casos de Uso y Reglas de Negocio. Quedan identificados (no
+resueltos) los siguientes desajustes en otras secciones del documento:
+
+1. El diagrama de clases y el diccionario de datos siguen usando
+   `SolicitudRuta` como nombre de la entidad; el backend la implementa como
+   `Reserva` en todos sus artefactos (modelo, tabla, servicio, controlador,
+   rutas).
+2. El diagrama de clases modela `Conductor`/`Pasajero` como herencia de
+   `Usuario`; el backend usa composición por rol (`Usuario.tipoUsuario`), no
+   herencia.
+3. No existe una entidad `Vehiculo` en el modelo de dominio del documento,
+   pese a que el backend la implementa como tabla independiente.
+4. La arquitectura y el diagrama de despliegue siguen mostrando
+   `ControladorPagos`, `ControladorNotificaciones`, Google Maps API y
+   Firebase Cloud Messaging como si fueran parte activa del sistema, sin la
+   nota de "fuera de alcance" que sí se aplicó a HU-07/HU-08.
+5. Los mockups documentados (login, registro) son una fracción del frontend
+   real, que ya tiene 5 páginas funcionales.
