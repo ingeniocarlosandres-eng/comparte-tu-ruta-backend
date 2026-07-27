@@ -1,4 +1,6 @@
 const Ruta = require('../models/Ruta');
+const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
+const { ErrorNoEncontrado, ErrorNoAutorizado } = require('../utils/ErroresHttp');
 const rutaRepository = require('../repositories/RutaRepository');
 const vehiculoRepository = require('../repositories/VehiculoRepository');
 
@@ -12,10 +14,10 @@ class RutaService {
   async publicarRuta(conductorId, datosRuta) {
     const vehiculo = await vehiculoRepository.buscarPorId(datosRuta.vehiculoId);
     if (!vehiculo || vehiculo.conductorId !== conductorId) {
-      throw new Error('El vehículo indicado no pertenece a este conductor');
+      throw new ErrorNoAutorizado('El vehículo indicado no pertenece a este conductor');
     }
     if (datosRuta.puestosDisponibles > vehiculo.capacidadMaxima) {
-      throw new Error(`El vehículo solo tiene capacidad para ${vehiculo.capacidadMaxima} puestos`);
+      throw new ErrorDeValidacion(`El vehículo solo tiene capacidad para ${vehiculo.capacidadMaxima} puestos`);
     }
 
     // Regla de negocio: no se puede publicar una ruta cuya fecha/hora de salida
@@ -23,10 +25,10 @@ class RutaService {
     // solo aplica al momento de crear la ruta, no al leerla de nuevo más adelante.
     const fechaHoraSalida = new Date(`${datosRuta.fechaSalida}T${datosRuta.horaSalida}`);
     if (Number.isNaN(fechaHoraSalida.getTime())) {
-      throw new Error('La fecha u hora de salida no tienen un formato válido');
+      throw new ErrorDeValidacion('La fecha u hora de salida no tienen un formato válido');
     }
     if (fechaHoraSalida.getTime() <= Date.now()) {
-      throw new Error('No se puede publicar una ruta con fecha u hora de salida ya pasada');
+      throw new ErrorDeValidacion('No se puede publicar una ruta con fecha u hora de salida ya pasada');
     }
 
     const ruta = new Ruta({
@@ -50,7 +52,7 @@ class RutaService {
 
   async obtenerRutaPorId(id) {
     const ruta = await rutaRepository.buscarPorId(id);
-    if (!ruta) throw new Error('Ruta no encontrada');
+    if (!ruta) throw new ErrorNoEncontrado('Ruta no encontrada');
     return ruta;
   }
 
@@ -61,7 +63,7 @@ class RutaService {
   async actualizarRuta(id, conductorId, cambios) {
     const ruta = await this.obtenerRutaPorId(id);
     if (ruta.conductorId !== conductorId) {
-      throw new Error('No tiene permisos para editar esta ruta');
+      throw new ErrorNoAutorizado('No tiene permisos para editar esta ruta');
     }
 
     // Se reconstruye el objeto para reutilizar las validaciones del modelo
@@ -90,7 +92,7 @@ class RutaService {
   async cancelarRuta(id, conductorId) {
     const ruta = await this.obtenerRutaPorId(id);
     if (ruta.conductorId !== conductorId) {
-      throw new Error('No tiene permisos para cancelar esta ruta');
+      throw new ErrorNoAutorizado('No tiene permisos para cancelar esta ruta');
     }
     return rutaRepository.actualizar(id, { estado: 'cancelada' });
   }
@@ -98,7 +100,7 @@ class RutaService {
   async eliminarRuta(id, conductorId) {
     const ruta = await this.obtenerRutaPorId(id);
     if (ruta.conductorId !== conductorId) {
-      throw new Error('No tiene permisos para eliminar esta ruta');
+      throw new ErrorNoAutorizado('No tiene permisos para eliminar esta ruta');
     }
     return rutaRepository.eliminar(id);
   }
