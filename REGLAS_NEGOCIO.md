@@ -209,3 +209,13 @@ resueltos) los siguientes desajustes en otras secciones del documento:
    nota de "fuera de alcance" que sí se aplicó a HU-07/HU-08.
 5. Los mockups documentados (login, registro) son una fracción del frontend
    real, que ya tiene 5 páginas funcionales.
+6. **Paradas intermedias y liberación dinámica de cupos.** En una sesión de
+   trabajo se planteó el escenario real de un conductor cuya ruta tiene
+   múltiples puntos de bajada (ej. Poblado Campestre → Unicentro, con
+   pasajeros bajándose en puntos intermedios a distintas tarifas), donde el
+   cupo de quien se baja antes podría liberarse para un nuevo pasajero en el
+   tramo restante. Es un problema de cómputo de cupos por tramo (similar al
+   "car pooling problem" de asignación de intervalos), no por viaje completo
+   como está implementado hoy. Se decidió conscientemente **no implementarlo**
+   en esta versión, para mantener el alcance actual del proyecto. Queda
+   registrado aquí como posible mejora futura, no como una omisión accidental.
