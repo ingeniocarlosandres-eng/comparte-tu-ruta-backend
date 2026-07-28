@@ -28,6 +28,8 @@ En barrios como Poblado Campestre, Juanchito, Floralia, Terrón Colorado, Ciudad
 | Control de versiones | Git |
 | Frontend (consumidor de esta API) | HTML5, CSS3, JavaScript vanilla (Material Design 3, WCAG 2.1 AA) |
 
+> **Nota:** el proyecto usa `mysql2` como driver de conexión a base de datos, no JDBC (que es exclusivo de Java). Ver [`JUSTIFICACION_JDBC.md`](./JUSTIFICACION_JDBC.md) para la explicación completa de por qué son funcionalmente equivalentes.
+
 ## Arquitectura del proyecto
 
 El backend está organizado en una **arquitectura en capas**, que separa responsabilidades y facilita el mantenimiento y las pruebas:
@@ -129,6 +131,28 @@ El servidor queda disponible en `http://localhost:3000`, con un endpoint de veri
 | POST | `/api/reservas` | Solicita puestos en una ruta | Sí (pasajero) |
 | PATCH | `/api/reservas/:id/confirmar` | Confirma una reserva | Sí (conductor) |
 | PATCH | `/api/reservas/:id/rechazar` | Rechaza una reserva | Sí (conductor) |
+
+## Estándar de codificación
+
+El proyecto sigue el **Airbnb JavaScript Style Guide** (variante `airbnb-base`,
+para proyectos Node.js sin framework de frontend), aplicado y verificado
+automáticamente con **ESLint**.
+
+```bash
+npm run lint
+```
+
+Ese comando revisa todo el código en `src/` y `tests/` contra las reglas
+definidas en `.eslintrc.json`. Algunas reglas del estándar original se
+ajustaron deliberadamente al contexto del proyecto (documentado como
+comentario en el propio archivo de configuración), por ejemplo:
+
+- `no-underscore-dangle`: se permite el prefijo `_` en métodos privados de
+  mapeo de los repositorios (ej. `_mapRow`), convención habitual para
+  distinguir métodos internos de la API pública de una clase.
+- `class-methods-use-this`: desactivada, porque los modelos (`Usuario`,
+  `Ruta`, etc.) tienen métodos de instancia que no siempre necesitan leer
+  `this` (ej. validaciones que solo dependen de los parámetros recibidos).
 
 ## Control de versiones
 
