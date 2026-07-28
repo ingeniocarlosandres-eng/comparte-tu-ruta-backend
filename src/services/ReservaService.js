@@ -1,6 +1,7 @@
 const Reserva = require('../models/Reserva');
 const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
-const { ErrorNoEncontrado, ErrorNoAutorizado } = require('../utils/ErroresHttp');
+const ErrorNoEncontrado = require('../utils/ErrorNoEncontrado');
+const ErrorNoAutorizado = require('../utils/ErrorNoAutorizado');
 const reservaRepository = require('../repositories/ReservaRepository');
 const rutaRepository = require('../repositories/RutaRepository');
 
@@ -35,7 +36,7 @@ class ReservaService {
       rutaId,
       pasajeroId,
       puestosReservados,
-      estado: 'pendiente'
+      estado: 'pendiente',
     });
 
     return reservaRepository.crear(reserva);
@@ -54,7 +55,7 @@ class ReservaService {
     ruta.reservarPuestos(reserva.puestosReservados);
     await rutaRepository.actualizar(ruta.id, {
       puestos_disponibles: ruta.puestosDisponibles,
-      estado: ruta.estado
+      estado: ruta.estado,
     });
 
     return reservaRepository.actualizarEstado(reservaId, 'confirmada');

@@ -21,7 +21,7 @@ class RutaRepository {
       precioPorPuesto: row.precio_por_puesto,
       puestosDisponibles: row.puestos_disponibles,
       estado: row.estado,
-      creadoEn: row.creado_en
+      creadoEn: row.creado_en,
     });
   }
 
@@ -32,8 +32,8 @@ class RutaRepository {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         ruta.conductorId, ruta.vehiculoId, ruta.barrioOrigen, ruta.barrioDestino,
-        ruta.fechaSalida, ruta.horaSalida, ruta.precioPorPuesto, ruta.puestosDisponibles, ruta.estado
-      ]
+        ruta.fechaSalida, ruta.horaSalida, ruta.precioPorPuesto, ruta.puestosDisponibles, ruta.estado,
+      ],
     );
     return this.buscarPorId(resultado.insertId);
   }
@@ -46,7 +46,7 @@ class RutaRepository {
   async listarPorConductor(conductorId) {
     const [filas] = await pool.query(
       'SELECT * FROM rutas WHERE conductor_id = ? ORDER BY fecha_salida DESC, hora_salida DESC',
-      [conductorId]
+      [conductorId],
     );
     return filas.map(RutaRepository._mapRow);
   }
@@ -80,17 +80,17 @@ class RutaRepository {
   async actualizar(id, cambios) {
     const camposPermitidos = [
       'barrio_origen', 'barrio_destino', 'fecha_salida', 'hora_salida',
-      'precio_por_puesto', 'puestos_disponibles', 'estado'
+      'precio_por_puesto', 'puestos_disponibles', 'estado',
     ];
     const asignaciones = [];
     const valores = [];
 
-    for (const [clave, valor] of Object.entries(cambios)) {
-      if (camposPermitidos.includes(clave)) {
+    Object.entries(cambios)
+      .filter(([clave]) => camposPermitidos.includes(clave))
+      .forEach(([clave, valor]) => {
         asignaciones.push(`${clave} = ?`);
         valores.push(valor);
-      }
-    }
+      });
     if (asignaciones.length === 0) return this.buscarPorId(id);
 
     valores.push(id);

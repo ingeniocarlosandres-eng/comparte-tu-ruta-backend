@@ -12,20 +12,20 @@ router.post(
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
     body('telefono').notEmpty().withMessage('El teléfono es obligatorio'),
-    body('barrio').notEmpty().withMessage('El barrio es obligatorio')
+    body('barrio').notEmpty().withMessage('El barrio es obligatorio'),
   ],
   validarCampos,
-  authController.registrar
+  authController.registrar,
 );
 
 router.post(
   '/login',
   [
     body('email').isEmail().withMessage('Debe ser un correo válido'),
-    body('password').notEmpty().withMessage('La contraseña es obligatoria')
+    body('password').notEmpty().withMessage('La contraseña es obligatoria'),
   ],
   validarCampos,
-  authController.iniciarSesion
+  authController.iniciarSesion,
 );
 
 module.exports = router;

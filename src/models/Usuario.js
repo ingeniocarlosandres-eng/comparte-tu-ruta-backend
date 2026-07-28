@@ -5,7 +5,9 @@
  * exponen a través de métodos controlados.
  */
 class Usuario {
-  constructor({ id, nombre, email, passwordHash, telefono, barrio, tipoUsuario, estado, creadoEn }) {
+  constructor({
+    id, nombre, email, passwordHash, telefono, barrio, tipoUsuario, estado, creadoEn,
+  }) {
     this.id = id ?? null;
     this.nombre = nombre;
     this.email = email;
@@ -54,7 +56,7 @@ class Usuario {
       barrio: this.barrio,
       tipoUsuario: this.tipoUsuario,
       estado: this.estado,
-      creadoEn: this.creadoEn
+      creadoEn: this.creadoEn,
     };
   }
 }

@@ -6,7 +6,9 @@
 class Vehiculo {
   static CAPACIDAD_MAXIMA_PERMITIDA = 4;
 
-  constructor({ id, conductorId, placa, marca, modelo, color, capacidadMaxima, creadoEn }) {
+  constructor({
+    id, conductorId, placa, marca, modelo, color, capacidadMaxima, creadoEn,
+  }) {
     this.id = id ?? null;
     this.conductorId = conductorId;
     this.placa = (placa || '').toUpperCase().trim();
@@ -43,7 +45,7 @@ class Vehiculo {
       modelo: this.modelo,
       color: this.color,
       capacidadMaxima: this.capacidadMaxima,
-      creadoEn: this.creadoEn
+      creadoEn: this.creadoEn,
     };
   }
 }

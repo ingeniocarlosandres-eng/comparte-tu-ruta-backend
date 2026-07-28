@@ -6,7 +6,9 @@
 class Reserva {
   static ESTADOS = ['pendiente', 'confirmada', 'rechazada', 'cancelada'];
 
-  constructor({ id, rutaId, pasajeroId, puestosReservados, estado, creadoEn }) {
+  constructor({
+    id, rutaId, pasajeroId, puestosReservados, estado, creadoEn,
+  }) {
     this.id = id ?? null;
     this.rutaId = rutaId;
     this.pasajeroId = pasajeroId;
@@ -44,7 +46,7 @@ class Reserva {
       pasajeroId: this.pasajeroId,
       puestosReservados: this.puestosReservados,
       estado: this.estado,
-      creadoEn: this.creadoEn
+      creadoEn: this.creadoEn,
     };
   }
 }

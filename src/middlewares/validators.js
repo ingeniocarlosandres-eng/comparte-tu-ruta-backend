@@ -7,10 +7,10 @@ function validarCampos(req, res, next) {
     return res.status(400).json({
       exito: false,
       mensaje: 'Error de validación en los datos enviados',
-      errores: errores.array().map((e) => ({ campo: e.path, mensaje: e.msg }))
+      errores: errores.array().map((e) => ({ campo: e.path, mensaje: e.msg })),
     });
   }
-  next();
+  return next();
 }
 
 module.exports = { validarCampos };

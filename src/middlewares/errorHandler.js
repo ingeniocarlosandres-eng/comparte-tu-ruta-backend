@@ -11,7 +11,7 @@
  *    usa las clases anteriores), se usa como respaldo una búsqueda de
  *    palabras clave en el mensaje.
  */
-function manejadorDeErrores(err, req, res, next) {
+function manejadorDeErrores(err, req, res, _next) {
   console.error(`[ERROR] ${req.method} ${req.originalUrl} ->`, err.message);
 
   let codigo;
@@ -27,20 +27,25 @@ function manejadorDeErrores(err, req, res, next) {
     const mensajesDeValidacion = [
       'no tiene un formato válido', 'debe tener', 'debe ser', 'debe estar',
       'obligatorio', 'obligatorios', 'inválido', 'no pueden ser iguales',
-      'ya existe', 'ya pasada', 'reserva activa'
+      'ya existe', 'ya pasada', 'reserva activa',
     ];
     const mensajeEnMinuscula = (err.message || '').toLowerCase();
     const esErrorDeValidacion = mensajesDeValidacion.some((frag) => mensajeEnMinuscula.includes(frag));
 
-    codigo = esErrorDeValidacion ? 400
-      : mensajeEnMinuscula.includes('no encontrad') ? 404
-      : mensajeEnMinuscula.includes('permisos') || mensajeEnMinuscula.includes('credenciales') ? 401
-      : 500;
+    if (esErrorDeValidacion) {
+      codigo = 400;
+    } else if (mensajeEnMinuscula.includes('no encontrad')) {
+      codigo = 404;
+    } else if (mensajeEnMinuscula.includes('permisos') || mensajeEnMinuscula.includes('credenciales')) {
+      codigo = 401;
+    } else {
+      codigo = 500;
+    }
   }
 
   res.status(codigo).json({
     exito: false,
-    mensaje: err.message || 'Error interno del servidor'
+    mensaje: err.message || 'Error interno del servidor',
   });
 }
 

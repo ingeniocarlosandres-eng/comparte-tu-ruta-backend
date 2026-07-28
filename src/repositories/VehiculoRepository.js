@@ -13,7 +13,7 @@ class VehiculoRepository {
       modelo: row.modelo,
       color: row.color,
       capacidadMaxima: row.capacidad_maxima,
-      creadoEn: row.creado_en
+      creadoEn: row.creado_en,
     });
   }
 
@@ -21,7 +21,7 @@ class VehiculoRepository {
     const [resultado] = await pool.query(
       `INSERT INTO vehiculos (conductor_id, placa, marca, modelo, color, capacidad_maxima)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [vehiculo.conductorId, vehiculo.placa, vehiculo.marca, vehiculo.modelo, vehiculo.color, vehiculo.capacidadMaxima]
+      [vehiculo.conductorId, vehiculo.placa, vehiculo.marca, vehiculo.modelo, vehiculo.color, vehiculo.capacidadMaxima],
     );
     return this.buscarPorId(resultado.insertId);
   }

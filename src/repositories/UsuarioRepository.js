@@ -19,7 +19,7 @@ class UsuarioRepository {
       barrio: row.barrio,
       tipoUsuario: row.tipo_usuario,
       estado: row.estado,
-      creadoEn: row.creado_en
+      creadoEn: row.creado_en,
     });
   }
 
@@ -27,7 +27,7 @@ class UsuarioRepository {
     const [resultado] = await pool.query(
       `INSERT INTO usuarios (nombre, email, password_hash, telefono, barrio, tipo_usuario)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [usuario.nombre, usuario.email, usuario.passwordHash, usuario.telefono, usuario.barrio, usuario.tipoUsuario]
+      [usuario.nombre, usuario.email, usuario.passwordHash, usuario.telefono, usuario.barrio, usuario.tipoUsuario],
     );
     return this.buscarPorId(resultado.insertId);
   }
@@ -59,12 +59,12 @@ class UsuarioRepository {
     const asignaciones = [];
     const valores = [];
 
-    for (const [clave, valor] of Object.entries(cambios)) {
-      if (camposPermitidos.includes(clave)) {
+    Object.entries(cambios)
+      .filter(([clave]) => camposPermitidos.includes(clave))
+      .forEach(([clave, valor]) => {
         asignaciones.push(`${clave} = ?`);
         valores.push(valor);
-      }
-    }
+      });
     if (asignaciones.length === 0) return this.buscarPorId(id);
 
     valores.push(id);

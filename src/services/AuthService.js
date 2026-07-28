@@ -10,7 +10,9 @@ const usuarioRepository = require('../repositories/UsuarioRepository');
  * la persistencia, respetando la separación de responsabilidades.
  */
 class AuthService {
-  async registrar({ nombre, email, password, telefono, barrio, tipoUsuario }) {
+  async registrar({
+    nombre, email, password, telefono, barrio, tipoUsuario,
+  }) {
     const existente = await usuarioRepository.buscarPorEmail(email);
     if (existente) {
       throw new Error('Ya existe un usuario registrado con este correo electrónico');
@@ -22,12 +24,14 @@ class AuthService {
     const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const usuario = new Usuario({ nombre, email, passwordHash, telefono, barrio, tipoUsuario });
+    const usuario = new Usuario({
+      nombre, email, passwordHash, telefono, barrio, tipoUsuario,
+    });
     const usuarioCreado = await usuarioRepository.crear(usuario);
 
     return {
       usuario: usuarioCreado.toPublicJSON(),
-      token: this._generarToken(usuarioCreado)
+      token: this._generarToken(usuarioCreado),
     };
   }
 
@@ -45,7 +49,7 @@ class AuthService {
     }
     return {
       usuario: usuario.toPublicJSON(),
-      token: this._generarToken(usuario)
+      token: this._generarToken(usuario),
     };
   }
 
@@ -53,7 +57,7 @@ class AuthService {
     return jwt.sign(
       { id: usuario.id, email: usuario.email, tipoUsuario: usuario.tipoUsuario },
       process.env.JWT_SECRET || 'clave_de_desarrollo',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '8h' },
     );
   }
 }

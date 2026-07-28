@@ -14,7 +14,7 @@ function verificarToken(req, res, next) {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'clave_de_desarrollo');
     req.usuario = payload;
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ exito: false, mensaje: 'Token inválido o expirado' });
   }
@@ -25,7 +25,7 @@ function soloConductores(req, res, next) {
   if (req.usuario?.tipoUsuario !== 'conductor' && req.usuario?.tipoUsuario !== 'ambos') {
     return res.status(403).json({ exito: false, mensaje: 'Esta acción requiere un perfil de conductor' });
   }
-  next();
+  return next();
 }
 
 module.exports = { verificarToken, soloConductores };

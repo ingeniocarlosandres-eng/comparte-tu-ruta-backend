@@ -11,7 +11,7 @@ class ReservaRepository {
       pasajeroId: row.pasajero_id,
       puestosReservados: row.puestos_reservados,
       estado: row.estado,
-      creadoEn: row.creado_en
+      creadoEn: row.creado_en,
     });
   }
 
@@ -19,7 +19,7 @@ class ReservaRepository {
     const [resultado] = await pool.query(
       `INSERT INTO reservas (ruta_id, pasajero_id, puestos_reservados, estado)
        VALUES (?, ?, ?, ?)`,
-      [reserva.rutaId, reserva.pasajeroId, reserva.puestosReservados, reserva.estado]
+      [reserva.rutaId, reserva.pasajeroId, reserva.puestosReservados, reserva.estado],
     );
     return this.buscarPorId(resultado.insertId);
   }
@@ -37,7 +37,7 @@ class ReservaRepository {
   async listarPorPasajero(pasajeroId) {
     const [filas] = await pool.query(
       'SELECT * FROM reservas WHERE pasajero_id = ? ORDER BY creado_en DESC',
-      [pasajeroId]
+      [pasajeroId],
     );
     return filas.map(ReservaRepository._mapRow);
   }
@@ -51,7 +51,7 @@ class ReservaRepository {
       `SELECT * FROM reservas
        WHERE ruta_id = ? AND pasajero_id = ? AND estado IN ('pendiente', 'confirmada')
        LIMIT 1`,
-      [rutaId, pasajeroId]
+      [rutaId, pasajeroId],
     );
     return ReservaRepository._mapRow(filas[0]);
   }

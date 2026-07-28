@@ -15,7 +15,7 @@ class RutaController {
   buscar = asyncHandler(async (req, res) => {
     const { origen, destino, fecha } = req.query;
     const rutas = await rutaService.buscarRutas({
-      barrioOrigen: origen, barrioDestino: destino, fecha
+      barrioOrigen: origen, barrioDestino: destino, fecha,
     });
     res.status(200).json({ exito: true, total: rutas.length, rutas: rutas.map((r) => r.toJSON()) });
   });

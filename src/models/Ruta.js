@@ -12,12 +12,13 @@ const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
 
 class Ruta {
   static PUESTOS_MAXIMOS = 4;
+
   static PRECIO_MINIMO = 3000;
 
   constructor({
     id, conductorId, vehiculoId, barrioOrigen, barrioDestino,
     fechaSalida, horaSalida, precioPorPuesto, puestosDisponibles,
-    estado, creadoEn
+    estado, creadoEn,
   }) {
     this.id = id ?? null;
     this.conductorId = conductorId;
@@ -49,7 +50,7 @@ class Ruta {
     }
     if (this.precioPorPuesto < Ruta.PRECIO_MINIMO) {
       throw new ErrorDeValidacion(
-        `El precio por puesto debe ser de al menos $${Ruta.PRECIO_MINIMO} COP`
+        `El precio por puesto debe ser de al menos $${Ruta.PRECIO_MINIMO} COP`,
       );
     }
     if (this.puestosDisponibles < 0 || this.puestosDisponibles > Ruta.PUESTOS_MAXIMOS) {
@@ -83,7 +84,7 @@ class Ruta {
       precioPorPuesto: this.precioPorPuesto,
       puestosDisponibles: this.puestosDisponibles,
       estado: this.estado,
-      creadoEn: this.creadoEn
+      creadoEn: this.creadoEn,
     };
   }
 }

@@ -1,6 +1,7 @@
 const Ruta = require('../models/Ruta');
 const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
-const { ErrorNoEncontrado, ErrorNoAutorizado } = require('../utils/ErroresHttp');
+const ErrorNoEncontrado = require('../utils/ErrorNoEncontrado');
+const ErrorNoAutorizado = require('../utils/ErrorNoAutorizado');
 const rutaRepository = require('../repositories/RutaRepository');
 const vehiculoRepository = require('../repositories/VehiculoRepository');
 
@@ -40,7 +41,7 @@ class RutaService {
       horaSalida: datosRuta.horaSalida,
       precioPorPuesto: datosRuta.precioPorPuesto,
       puestosDisponibles: datosRuta.puestosDisponibles,
-      estado: 'activa'
+      estado: 'activa',
     });
 
     return rutaRepository.crear(ruta);
@@ -75,7 +76,7 @@ class RutaService {
       horaSalida: cambios.horaSalida ?? ruta.horaSalida,
       precioPorPuesto: cambios.precioPorPuesto ?? ruta.precioPorPuesto,
       puestosDisponibles: cambios.puestosDisponibles ?? ruta.puestosDisponibles,
-      estado: cambios.estado ?? ruta.estado
+      estado: cambios.estado ?? ruta.estado,
     });
 
     return rutaRepository.actualizar(id, {
@@ -85,7 +86,7 @@ class RutaService {
       hora_salida: rutaActualizada.horaSalida,
       precio_por_puesto: rutaActualizada.precioPorPuesto,
       puestos_disponibles: rutaActualizada.puestosDisponibles,
-      estado: rutaActualizada.estado
+      estado: rutaActualizada.estado,
     });
   }
 
