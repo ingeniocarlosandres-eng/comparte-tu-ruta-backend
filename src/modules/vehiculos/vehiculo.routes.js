@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const vehiculoController = require('../controllers/VehiculoController');
-const { verificarToken, soloConductores } = require('../middlewares/authMiddleware');
+const vehiculoController = require('./vehiculo.controller');
+const { verificarToken, soloConductores } = require('../../middlewares/authMiddleware');
 
 const router = Router();
 

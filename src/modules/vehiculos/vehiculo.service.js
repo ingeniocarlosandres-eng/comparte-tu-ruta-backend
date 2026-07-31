@@ -1,5 +1,5 @@
-const Vehiculo = require('../models/Vehiculo');
-const vehiculoRepository = require('../repositories/VehiculoRepository');
+const Vehiculo = require('./vehiculo.model');
+const vehiculoRepository = require('./vehiculo.repository');
 
 /** Registro y consulta de vehículos de los conductores. */
 class VehiculoService {

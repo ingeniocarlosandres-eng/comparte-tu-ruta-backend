@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const rutaController = require('../controllers/RutaController');
-const { verificarToken, soloConductores } = require('../middlewares/authMiddleware');
+const rutaController = require('./ruta.controller');
+const { verificarToken, soloConductores } = require('../../middlewares/authMiddleware');
 
 const router = Router();
 

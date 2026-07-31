@@ -1,5 +1,5 @@
-const rutaService = require('../services/RutaService');
-const { asyncHandler } = require('../middlewares/errorHandler');
+const rutaService = require('./ruta.service');
+const { asyncHandler } = require('../../middlewares/errorHandler');
 
 /**
  * RutaController

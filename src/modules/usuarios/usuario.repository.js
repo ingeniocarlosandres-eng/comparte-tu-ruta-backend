@@ -1,5 +1,5 @@
-const { pool } = require('../config/database');
-const Usuario = require('../models/Usuario');
+const { pool } = require('../../config/database');
+const Usuario = require('./usuario.model');
 
 /**
  * UsuarioRepository

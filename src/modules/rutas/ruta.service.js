@@ -1,9 +1,9 @@
-const Ruta = require('../models/Ruta');
-const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
-const ErrorNoEncontrado = require('../utils/ErrorNoEncontrado');
-const ErrorNoAutorizado = require('../utils/ErrorNoAutorizado');
-const rutaRepository = require('../repositories/RutaRepository');
-const vehiculoRepository = require('../repositories/VehiculoRepository');
+const Ruta = require('./ruta.model');
+const ErrorDeValidacion = require('../../shared/ErrorDeValidacion');
+const ErrorNoEncontrado = require('../../shared/ErrorNoEncontrado');
+const ErrorNoAutorizado = require('../../shared/ErrorNoAutorizado');
+const rutaRepository = require('./ruta.repository');
+const vehiculoRepository = require('../vehiculos/vehiculo.repository');
 
 /**
  * RutaService

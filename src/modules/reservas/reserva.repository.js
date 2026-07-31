@@ -1,5 +1,5 @@
-const { pool } = require('../config/database');
-const Reserva = require('../models/Reserva');
+const { pool } = require('../../config/database');
+const Reserva = require('./reserva.model');
 
 /** Capa de acceso a datos para la tabla `reservas`. */
 class ReservaRepository {

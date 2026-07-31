@@ -1,5 +1,5 @@
-const reservaService = require('../services/ReservaService');
-const { asyncHandler } = require('../middlewares/errorHandler');
+const reservaService = require('./reserva.service');
+const { asyncHandler } = require('../../middlewares/errorHandler');
 
 /** ReservaController: solicitud y gestión de reservas de puestos. */
 class ReservaController {

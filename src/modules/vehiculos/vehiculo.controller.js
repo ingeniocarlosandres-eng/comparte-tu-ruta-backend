@@ -1,5 +1,5 @@
-const vehiculoService = require('../services/VehiculoService');
-const { asyncHandler } = require('../middlewares/errorHandler');
+const vehiculoService = require('./vehiculo.service');
+const { asyncHandler } = require('../../middlewares/errorHandler');
 
 /** VehiculoController: registro de vehículos de los conductores. */
 class VehiculoController {

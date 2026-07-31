@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const reservaController = require('../controllers/ReservaController');
-const { verificarToken } = require('../middlewares/authMiddleware');
+const reservaController = require('./reserva.controller');
+const { verificarToken } = require('../../middlewares/authMiddleware');
 
 const router = Router();
 

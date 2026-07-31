@@ -1,5 +1,5 @@
-const { pool } = require('../config/database');
-const Vehiculo = require('../models/Vehiculo');
+const { pool } = require('../../config/database');
+const Vehiculo = require('./vehiculo.model');
 
 /** Capa de acceso a datos para la tabla `vehiculos`. */
 class VehiculoRepository {

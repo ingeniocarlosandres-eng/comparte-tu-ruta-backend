@@ -1,5 +1,5 @@
-const { pool } = require('../config/database');
-const Ruta = require('../models/Ruta');
+const { pool } = require('../../config/database');
+const Ruta = require('./ruta.model');
 
 /**
  * RutaRepository

@@ -58,23 +58,30 @@ Repositories       → acceso a datos (consultas SQL con mysql2)
 
 ### Estructura de carpetas
 
+El proyecto está organizado **por módulo de negocio** (feature-based), en vez de agrupar primero por tipo de capa: dentro de `src/modules/rutas/` está todo lo relacionado con rutas (modelo, repositorio, servicio, controlador y rutas HTTP); lo mismo aplica para `usuarios/`, `vehiculos/` y `reservas/`. Dentro de cada módulo, las capas siguen existiendo igual (controller → service → repository → model) — lo que cambia es el criterio de agrupación de carpetas, no la arquitectura.
+
 ```
 comparte-tu-ruta-backend/
 ├── database/
-│   └── schema.sql              # Esquema de la base de datos (DDL)
+│   └── schema.sql                  # Esquema de la base de datos (DDL)
 ├── src/
 │   ├── config/
-│   │   └── database.js         # Pool de conexiones MySQL
-│   ├── models/                 # Clases POO: Usuario, Vehiculo, Ruta, Reserva
-│   ├── repositories/           # Acceso a datos por entidad
-│   ├── services/                # Lógica de negocio (AuthService, RutaService, ReservaService, VehiculoService)
-│   ├── controllers/            # Controladores HTTP
-│   ├── middlewares/            # Autenticación JWT, validación y manejo de errores
-│   ├── routes/                 # Definición de endpoints por módulo
-│   ├── app.js                  # Configuración de Express
-│   └── server.js               # Punto de entrada de la aplicación
+│   │   └── database.js             # Pool de conexiones MySQL
+│   ├── middlewares/                 # Autenticación JWT, validación y manejo de errores (transversales a todos los módulos)
+│   ├── modules/
+│   │   ├── auth/                    # auth.routes.js, auth.controller.js, auth.service.js, index.js
+│   │   ├── usuarios/                # usuario.model.js, usuario.repository.js
+│   │   ├── vehiculos/               # vehiculo.model.js, .repository.js, .service.js, .controller.js, .routes.js, index.js
+│   │   ├── rutas/                   # ruta.model.js, .repository.js, .service.js, .controller.js, .routes.js, index.js
+│   │   └── reservas/                # reserva.model.js, .repository.js, .service.js, .controller.js, .routes.js, index.js
+│   ├── shared/                      # ErrorDeValidacion, ErrorNoEncontrado, ErrorNoAutorizado (usados por varios módulos)
+│   ├── routes/
+│   │   └── index.js                 # Agrega las rutas de cada módulo bajo su prefijo (/auth, /rutas, /reservas, /vehiculos)
+│   ├── app.js                       # Configuración de Express
+│   └── server.js                    # Punto de entrada de la aplicación
 ├── tests/
-│   └── smoke-test.js           # Prueba de humo del flujo completo de la API
+│   └── smoke-test.js                # Prueba de humo del flujo completo de la API
+├── .eslintrc.json
 ├── .env.example
 ├── .gitignore
 └── package.json

@@ -8,7 +8,7 @@
  *    voluntario propio de un carpooling comunitario; ver REGLAS_NEGOCIO.md
  *    y Documento_Proyecto_ADSO v1.6, Tabla 16).
  */
-const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
+const ErrorDeValidacion = require('../../shared/ErrorDeValidacion');
 
 class Ruta {
   static PUESTOS_MAXIMOS = 4;

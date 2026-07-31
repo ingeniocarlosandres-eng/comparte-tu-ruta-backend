@@ -1,9 +1,9 @@
-const Reserva = require('../models/Reserva');
-const ErrorDeValidacion = require('../utils/ErrorDeValidacion');
-const ErrorNoEncontrado = require('../utils/ErrorNoEncontrado');
-const ErrorNoAutorizado = require('../utils/ErrorNoAutorizado');
-const reservaRepository = require('../repositories/ReservaRepository');
-const rutaRepository = require('../repositories/RutaRepository');
+const Reserva = require('./reserva.model');
+const ErrorDeValidacion = require('../../shared/ErrorDeValidacion');
+const ErrorNoEncontrado = require('../../shared/ErrorNoEncontrado');
+const ErrorNoAutorizado = require('../../shared/ErrorNoAutorizado');
+const reservaRepository = require('./reserva.repository');
+const rutaRepository = require('../rutas/ruta.repository');
 
 /**
  * ReservaService
