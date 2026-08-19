@@ -161,6 +161,104 @@ comentario en el propio archivo de configuración), por ejemplo:
   `Ruta`, etc.) tienen métodos de instancia que no siempre necesitan leer
   `this` (ej. validaciones que solo dependen de los parámetros recibidos).
 
+### Ejemplos de uso
+
+#### POST /api/auth/registro
+
+Registra un nuevo usuario (conductor o pasajero).
+
+**Body (JSON):**
+```json
+{
+  "nombre": "Andrés Conductor",
+  "email": "andres.conductor@correo.com",
+  "password": "123456",
+  "telefono": "3007654321",
+  "barrio": "Terrón Colorado",
+  "tipoUsuario": "conductor"
+}
+```
+
+**Respuesta exitosa (201 Created):**
+```json
+{
+  "exito": true,
+  "mensaje": "Usuario registrado correctamente",
+  "usuario": {
+    "id": 10,
+    "nombre": "Andrés Conductor",
+    "email": "andres.conductor@correo.com",
+    "tipoUsuario": "conductor",
+    "estado": "activo"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+---
+
+#### POST /api/rutas
+
+Publica una nueva ruta. Requiere token de conductor. Valida que el vehículo pertenezca al conductor, que los puestos no superen la capacidad del vehículo, y que la fecha de salida sea futura.
+
+**Body (JSON):**
+```json
+{
+  "vehiculoId": 7,
+  "barrioOrigen": "Ciudad Córdoba",
+  "barrioDestino": "Poblado Campestre",
+  "fechaSalida": "2026-09-01",
+  "horaSalida": "08:00",
+  "precioPorPuesto": 5000,
+  "puestosDisponibles": 3
+}
+```
+
+**Respuesta exitosa (201 Created):**
+```json
+{
+  "exito": true,
+  "mensaje": "Ruta publicada correctamente",
+  "ruta": {
+    "id": 8,
+    "barrioOrigen": "Ciudad Córdoba",
+    "barrioDestino": "Poblado Campestre",
+    "precioPorPuesto": 5000,
+    "puestosDisponibles": 3,
+    "estado": "activa"
+  }
+}
+```
+
+---
+
+#### POST /api/reservas
+
+Solicita puestos en una ruta. Requiere token de pasajero. Un conductor no puede reservar en su propia ruta, y un pasajero no puede tener dos reservas activas sobre la misma ruta.
+
+**Body (JSON):**
+```json
+{
+  "rutaId": 8,
+  "puestosReservados": 1
+}
+```
+
+**Respuesta exitosa (201 Created):**
+```json
+{
+  "exito": true,
+  "mensaje": "Reserva solicitada correctamente",
+  "reserva": {
+    "id": 4,
+    "rutaId": 8,
+    "pasajeroId": 9,
+    "puestosReservados": 1,
+    "estado": "pendiente"
+  }
+}
+```
+
 ## Control de versiones
 
 El proyecto sigue la convención de commits ya establecida en el equipo:
