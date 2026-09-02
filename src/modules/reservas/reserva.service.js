@@ -76,9 +76,9 @@ class ReservaService {
     return reservaRepository.listarPorPasajero(pasajeroId);
   }
 
-  async listarReservasDeRuta(rutaId) {
-    return reservaRepository.listarPorRuta(rutaId);
-  }
+ async listarReservasDeRuta(rutaId) {
+  return reservaRepository.listarPorRutaConPasajero(rutaId);
+}
 }
 
 module.exports = new ReservaService();

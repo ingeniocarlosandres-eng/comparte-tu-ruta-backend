@@ -33,6 +33,27 @@ class ReservaRepository {
     const [filas] = await pool.query('SELECT * FROM reservas WHERE ruta_id = ?', [rutaId]);
     return filas.map(ReservaRepository._mapRow);
   }
+  /**
+ * Igual que listarPorRuta, pero enriquece cada reserva con los datos
+ * básicos del pasajero (nombre, teléfono), mediante un JOIN con usuarios.
+ * Se usa en la vista de "Solicitudes pendientes" del conductor.
+ */
+async listarPorRutaConPasajero(rutaId) {
+  const [filas] = await pool.query(
+    `SELECT r.*, u.nombre AS pasajero_nombre, u.telefono AS pasajero_telefono
+     FROM reservas r
+     JOIN usuarios u ON u.id = r.pasajero_id
+     WHERE r.ruta_id = ?`,
+    [rutaId],
+  );
+  return filas.map((fila) => ({
+    ...ReservaRepository._mapRow(fila).toJSON(),
+    pasajero: {
+      nombre: fila.pasajero_nombre,
+      telefono: fila.pasajero_telefono,
+    },
+  }));
+}
 
   async listarPorPasajero(pasajeroId) {
     const [filas] = await pool.query(

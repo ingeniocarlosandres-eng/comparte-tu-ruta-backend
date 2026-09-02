@@ -24,9 +24,9 @@ class ReservaController {
   });
 
   reservasDeRuta = asyncHandler(async (req, res) => {
-    const reservas = await reservaService.listarReservasDeRuta(req.params.rutaId);
-    res.status(200).json({ exito: true, total: reservas.length, reservas: reservas.map((r) => r.toJSON()) });
-  });
+  const reservas = await reservaService.listarReservasDeRuta(req.params.rutaId);
+  res.status(200).json({ exito: true, total: reservas.length, reservas });
+});
 }
 
 module.exports = new ReservaController();
