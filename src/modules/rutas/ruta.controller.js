@@ -20,10 +20,10 @@ class RutaController {
     res.status(200).json({ exito: true, total: rutas.length, rutas: rutas.map((r) => r.toJSON()) });
   });
 
-  obtenerPorId = asyncHandler(async (req, res) => {
-    const ruta = await rutaService.obtenerRutaPorId(req.params.id);
-    res.status(200).json({ exito: true, ruta: ruta.toJSON() });
-  });
+ obtenerPorId = asyncHandler(async (req, res) => {
+  const ruta = await rutaService.obtenerRutaPorIdConDetalle(req.params.id);
+  res.status(200).json({ exito: true, ruta });
+});
 
   misRutas = asyncHandler(async (req, res) => {
     const rutas = await rutaService.listarRutasDeConductor(req.usuario.id);

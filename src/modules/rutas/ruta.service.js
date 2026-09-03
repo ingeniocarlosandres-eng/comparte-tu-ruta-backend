@@ -56,6 +56,11 @@ class RutaService {
     if (!ruta) throw new ErrorNoEncontrado('Ruta no encontrada');
     return ruta;
   }
+  async obtenerRutaPorIdConDetalle(id) {
+  const ruta = await rutaRepository.buscarPorIdConDetalle(id);
+  if (!ruta) throw new ErrorNoEncontrado('Ruta no encontrada');
+  return ruta;
+}
 
   async listarRutasDeConductor(conductorId) {
     return rutaRepository.listarPorConductor(conductorId);

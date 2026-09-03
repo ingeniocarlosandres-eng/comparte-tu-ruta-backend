@@ -42,6 +42,38 @@ class RutaRepository {
     const [filas] = await pool.query('SELECT * FROM rutas WHERE id = ?', [id]);
     return RutaRepository._mapRow(filas[0]);
   }
+  /**
+ * Igual que buscarPorId, pero enriquece la ruta con los datos del
+ * vehículo y del conductor (nombre, teléfono, marca, placa).
+ * Se usa en la vista "Mis reservas" del pasajero, para que pueda
+ * ver con quién y en qué vehículo va a viajar.
+ */
+async buscarPorIdConDetalle(id) {
+  const [filas] = await pool.query(
+    `SELECT r.*,
+            v.marca AS vehiculo_marca, v.placa AS vehiculo_placa, v.color AS vehiculo_color,
+            u.nombre AS conductor_nombre, u.telefono AS conductor_telefono
+     FROM rutas r
+     JOIN vehiculos v ON v.id = r.vehiculo_id
+     JOIN usuarios u ON u.id = r.conductor_id
+     WHERE r.id = ?`,
+    [id],
+  );
+  const fila = filas[0];
+  if (!fila) return null;
+  return {
+    ...RutaRepository._mapRow(fila).toJSON(),
+    vehiculo: {
+      marca: fila.vehiculo_marca,
+      placa: fila.vehiculo_placa,
+      color: fila.vehiculo_color,
+    },
+    conductor: {
+      nombre: fila.conductor_nombre,
+      telefono: fila.conductor_telefono,
+    },
+  };
+}
 
   async listarPorConductor(conductorId) {
     const [filas] = await pool.query(
