@@ -71,7 +71,37 @@ class ReservaService {
     }
     return reservaRepository.actualizarEstado(reservaId, 'rechazada');
   }
+  /**
+   * Permite al propio pasajero cancelar su reserva, mientras esté
+   * pendiente o confirmada y la ruta no haya salido todavía.
+   * Si estaba confirmada, se devuelve el cupo a la ruta.
+   */
+  async cancelarReserva(reservaId, pasajeroId) {
+    const reserva = await reservaRepository.buscarPorId(reservaId);
+    if (!reserva) throw new ErrorNoEncontrado('Reserva no encontrada');
+    if (reserva.pasajeroId !== pasajeroId) {
+      throw new ErrorNoAutorizado('No tiene permisos para cancelar esta reserva');
+    }
+    if (!['pendiente', 'confirmada'].includes(reserva.estado)) {
+      throw new ErrorDeValidacion('Esta reserva ya no se puede cancelar');
+    }
 
+    const ruta = await rutaRepository.buscarPorId(reserva.rutaId);
+    const fechaHoraSalida = new Date(`${ruta.fechaSalida}T${ruta.horaSalida}`);
+    if (fechaHoraSalida.getTime() <= Date.now()) {
+      throw new ErrorDeValidacion('No se puede cancelar una reserva cuya ruta ya salió');
+    }
+
+    if (reserva.estado === 'confirmada') {
+      ruta.liberarPuestos(reserva.puestosReservados);
+      await rutaRepository.actualizar(ruta.id, {
+        puestos_disponibles: ruta.puestosDisponibles,
+        estado: ruta.estado,
+      });
+    }
+
+    return reservaRepository.actualizarEstado(reservaId, 'cancelada');
+  }
   async listarReservasDePasajero(pasajeroId) {
     return reservaRepository.listarPorPasajero(pasajeroId);
   }

@@ -71,7 +71,12 @@ class Ruta {
     this.puestosDisponibles -= cantidad;
     if (this.puestosDisponibles === 0) this.estado = 'completa';
   }
-
+  /** Devuelve puestos a la ruta al cancelar una reserva que ya estaba confirmada */
+  liberarPuestos(cantidad) {
+    if (cantidad <= 0) throw new ErrorDeValidacion('La cantidad a liberar debe ser mayor a cero');
+    this.puestosDisponibles = Math.min(this.puestosDisponibles + cantidad, Ruta.PUESTOS_MAXIMOS);
+    if (this.puestosDisponibles > 0 && this.estado === 'completa') this.estado = 'activa';
+  }
   toJSON() {
     return {
       id: this.id,

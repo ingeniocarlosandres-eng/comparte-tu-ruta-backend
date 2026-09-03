@@ -10,4 +10,5 @@ router.get('/ruta/:rutaId', verificarToken, reservaController.reservasDeRuta);
 router.patch('/:id/confirmar', verificarToken, reservaController.confirmar);
 router.patch('/:id/rechazar', verificarToken, reservaController.rechazar);
 
+router.patch('/:id/cancelar', verificarToken, reservaController.cancelar);
 module.exports = router;
