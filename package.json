@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "node tests/smoke-test.js",
+    "test:scoring": "node tests/recomendacion.scoring.test.js",
     "lint": "eslint src tests --ext .js",
     "db:init": "node database/init-db.js"
   },
