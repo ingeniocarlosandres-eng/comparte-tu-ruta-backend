@@ -3,6 +3,10 @@ const app = require('./app');
 const { verificarConexion } = require('./config/database');
 
 const PORT = process.env.PORT || 3000;
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  console.error('Falta JWT_SECRET en producción. El servidor no iniciará.');
+  process.exit(1);
+}
 
 /**
  * Punto de entrada de la aplicación.

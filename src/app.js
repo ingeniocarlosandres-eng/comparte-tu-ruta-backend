@@ -9,7 +9,10 @@ const { manejadorDeErrores } = require('./middlewares/errorHandler');
  */
 const app = express();
 
-app.use(cors());
+const origenesPermitidos = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : true;
+app.use(cors({ origin: origenesPermitidos }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
