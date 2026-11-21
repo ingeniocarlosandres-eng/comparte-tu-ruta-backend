@@ -10,7 +10,10 @@ router.post(
   [
     body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
     body('email').isEmail().withMessage('Debe ser un correo válido'),
-    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+        body('password')
+      .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
+      .matches(/[A-Za-z]/).withMessage('La contraseña debe incluir al menos una letra')
+      .matches(/\d/).withMessage('La contraseña debe incluir al menos un número'),
     body('telefono').notEmpty().withMessage('El teléfono es obligatorio'),
     body('barrio').notEmpty().withMessage('El barrio es obligatorio'),
   ],
