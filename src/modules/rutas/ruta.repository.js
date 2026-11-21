@@ -88,8 +88,13 @@ async buscarPorIdConDetalle(id) {
    * Utilizada por el módulo de búsqueda de rutas del frontend.
    */
   async buscar({ barrioOrigen, barrioDestino, fecha } = {}) {
-    let sql = "SELECT * FROM rutas WHERE estado = 'activa' AND puestos_disponibles > 0";
-    const params = [];
+       // Hora de Colombia (UTC-5): el servidor en la nube trabaja en UTC
+    const ahoraColombia = new Date(Date.now() - 5 * 60 * 60 * 1000);
+    const hoy = ahoraColombia.toISOString().slice(0, 10);
+    const horaActual = ahoraColombia.toISOString().slice(11, 19);
+    let sql = "SELECT * FROM rutas WHERE estado = 'activa' AND puestos_disponibles > 0"
+      + ' AND (fecha_salida > ? OR (fecha_salida = ? AND hora_salida > ?))';
+    const params = [hoy, hoy, horaActual];
 
     if (barrioOrigen) {
       sql += ' AND barrio_origen LIKE ?';
