@@ -20,6 +20,10 @@ class RutaService {
     if (datosRuta.puestosDisponibles > vehiculo.capacidadMaxima) {
       throw new ErrorDeValidacion(`El vehículo solo tiene capacidad para ${vehiculo.capacidadMaxima} puestos`);
     }
+    
+    if (!(Number(datosRuta.puestosDisponibles) >= 1)) {
+      throw new ErrorDeValidacion('La ruta debe ofrecer al menos 1 puesto disponible');
+    }
 
     // Regla de negocio: no se puede publicar una ruta cuya fecha/hora de salida
     // ya haya pasado. Esta validación vive aquí (y no en el modelo Ruta) porque
